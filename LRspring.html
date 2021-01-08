@@ -1,0 +1,415 @@
+<html>
+	<head>
+		<title>MTB Spring Calc w/ Leverage Curve</title>
+		<link href="styles.css" rel="stylesheet">
+		<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+	</head>
+
+
+	<body>
+
+	<main>
+		<h1>David's MTB Spring Rate Calc</h1>
+
+		<h2>Inputs</h2>
+		<form>
+		<table border="2px">
+			<tr>
+				<td>Rider+Gear Weight</td>
+				<td><input type="number" name="rider_weight" id="rider_weight" value="133.9"></td>
+				<td>lb</td>
+			</tr>
+			<tr>
+				<td>Bike Weight</td>
+				<td><input type="number" name="bike_weight" id="bike_weight" value="40.3"></td>
+				<td>lb</td>
+			</tr>
+			<tr>
+				<td>Rear Unsprung Weight Override***</td>
+				<td><input type="number" value="0" id="rear_unsprung_override"></td>
+				<td>lb</td>
+			</tr>
+			<tr>
+				<td>Shock Stroke</td>
+				<td><input type="number" name="stroke" id="stroke" value="75"></td>
+				<td>mm</td>
+			</tr>
+			<tr>
+				<td>Frame Travel</td>
+				<td><input type="number" name="travel" id="travel" value="215"></td>
+				<td>mm</td>
+			</tr>
+			<tr>
+				<td>Spring Rate</td>
+				<td><input type="number" name="spring" id="spring" value="350"></td>
+				<td>lb/in</td>
+			</tr>
+			<tr>
+				<td>Preload</td>
+				<td><input type="number" name="spring" id="preload" value="0.5"></td>
+				<td>turns</td>
+			</tr>
+			<tr>
+				<td>Preload Thread Pitch***</td>
+				<td><input type="number" name="spring" id="preload_pitch" value="24"></td>
+				<td>TPI</td>
+			</tr>
+			<tr>
+				<td>Chainstay Length</td>
+				<td><input type="number" value="455" id="chainstay"></td>
+				<td>mm</td>
+			</tr>
+			<tr>
+				<td>Wheelbase</td>
+				<td><input type="number" value="1289" id="wheelbase"></td>
+				<td>mm</td>
+			</tr>
+			<tr>
+				<td>Weight Dist Override***</td>
+				<td><input type="number" value="0" id="weight_dist_override"></td>
+				<td>%</td>
+			</tr>
+			<tr>
+				<td>Shaft Diameter</td>
+				<td><input type="number" value="0.354" name="shaft_diameter" id="shaft_diameter"></td>
+				<td>inches</td>
+			</tr>
+			<tr>
+				<td>Gas Pressure</td>
+				<td><input type="number" value="150" name="gas_pressure" id="gas_pressure"></td>
+				<td>psi</td>
+			</tr>
+			<tr>
+				<td>Leverage Ratio % Change <br> (AKA Progressivity)</td>
+				<td><input type="number" value="25" name="linear_progression" id="linear_progression"></td>
+				<td>%</td>
+			</tr>
+		</table>
+
+		<i>*** not yet programmed in</i>
+
+		<hr>
+		<input type="button" name="submit" value="submit" id="submit">
+		<input type="reset" name="reset" value="reset" id="reset">
+
+		<hr>
+		<h2>Outputs</h2>
+		<h3>Normal (Average Leverage Ratio) Method (+ Gas Force)</h3>
+		<table border="2px">
+			<tr>
+				<td>Rear Weight %</td>
+				<td><input readonly type="number" id="rear_weight_percent"></td>
+				<td>%</td>
+			</tr>
+			<tr>
+				<td>Rear Weight</td>
+				<td><input readonly type="number" id="rear_weight_absolute"></td>
+				<td>lb</td>
+			</tr>
+			<tr>
+				<td>Avg LR</td>
+				<td><input readonly type="" name="" id="avgLR"></td>
+				<td>mm/mm</td>
+			</tr>
+			<tr>
+				<td>Avg LR Wheel Rate</td>
+				<td><input readonly type="" name="" id="avgLRWR"></td>
+				<td>lbf/in</td>
+			</tr>
+			<tr>
+				<td>Avg LR Sag</td>
+				<td><input readonly type="" name="" id="avgLRsag"></td>
+				<td>%</td>
+			</tr>
+			<tr>
+				<td>Avg LR <br>Sprung Natural Freq</td>
+				<td><input readonly type="" name="" id="avgLRnatfreq"></td>
+				<td>Hz</td>
+			</tr>
+			<tr>
+				<td>Gas Force</td>
+				<td><input readonly type="" name="" id="gasForce"></td>
+				<td>lbf</td>
+			</tr>
+			<tr>
+				<td>Bottom Out<br>Force (Linear)</td>
+				<td><input readonly type="" name="" id="linBottomOutForce"></td>
+				<td>lbf</td>
+			</tr>
+			<tr>
+				<td>Bottom Out<br>Spring Energy (Linear)</td>
+				<td><input readonly type="" name="" id="linBottomOutEnergy"></td>
+				<td>Joules</td>
+			</tr>
+		</table>
+		<h3>Including Frame Progressivity (+Gas Force) Outputs</h3>
+		<table border="2px">
+			<tr>
+				<td>Shock Sag</td>
+				<td><input readonly type="" name="" id="linLRSag"></td>
+				<td>%</td>
+			</tr>
+			<tr>
+				<td>Bottom Out Force</td>
+				<td><input readonly type="" name="" id="bottomOutForce"></td>
+				<td>lbf</td>
+			</tr>
+			<tr>
+				<td>Bottom Out Energy***</td>
+				<td><input readonly type="" name="" id="bottomOutEnergy"></td>
+				<td>Joules</td>
+			</tr>
+		</table>
+
+		<i>*** not yet programmed in</i>
+
+		</form>
+		<hr>
+
+
+		<p><input type="button" name="" value="Print This Result" onclick="window.print()"></p>
+		<hr>
+		<h2>How to figure out your bike's leverage ratio curve</h2>
+		<ol>
+			<li>Get it directly from the manufacturer (see <a href="https://www.transitionbikes.com/images/GiddyUpStokeOptions_ScoutWEB.jpg">MY20 Transition Scout</a> or <a href="https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSOuW7UGkjkZaCMRFnMyjHqDyPYnfl8tTg4O5CW7d8i-Hq7tZ7HfA-8UgSYdNx3mLY6F4TXQtyF-hSX/pubhtml#">Nicolai G1</a>)</li>
+			<li>Pinkbike's "behind the numbers" series (see <a href="https://www.pinkbike.com/news/behind-the-numbers-santa-cruz-megatower-suspension-analysis.html">MY20 Santa Cruz Megatower</a>)</li>
+			<li>Antonio Osuna's LinkageDesign page (see <a href="http://linkagedesign.blogspot.com/2019/12/specialized-enduro-2020.html">MY20 Specialized Enduro</a>)</li>
+			<li>Model your frame using <a href="https://www.bikechecker.com/">LinkageX3</a></li>
+			<li>Measure it directly on your frame (requires tools/knowledge... guide coming soon)</li>
+
+		</ol>
+		<hr>
+		<h2>How it works</h2>
+		<p>The script of the constant leverage ratio calculator works as follows.</p>
+		<ol>
+			<li>Compute rear axle sprung weight in pounds from rider/bike weight and geometry. <br> Assumes % Rear = (1- chainstay/wheelbase)</li>
+
+			<li>Compute shock gas force and preload</li>
+
+			<li>Compute how much shock stroke in inches is used with the computed rear weight value. <br> (spring rate)*(sag) + gas force + preload = (rear sprung weight)*(avg LR)... solve for sag</li>
+
+			<li>Compute summary statistics from that sag value (sag in %, wheel rate, bottom out, natural freq, etc..)</li>
+
+		</ol>
+		<p>The script of the linear leverage ratio calculator works the same, except the "avg LR" in the equation is swapped for LR at that specific stroke value.</p>
+		<p>Because the LR changes as a function of shock stroke, an iterative solver is used to solve the equation. As of now a linear leverage ratio slope (defined by % change and average ratio) is assumed to make input easier. In the future, there will be an input table for leverage rate curve if you know that info.</p>
+
+		<h2>MTB Suspension Setup Notes</h2>
+
+		<h3>Computing Rear Axle Weight</h3>
+		<p>The best way to measure this is with a set of scales (as is done for cars)</p>
+		<img src="scales.jpg" width="400px">
+		<p>Some simple assumptions can be made with rules of thumb, (60% XC, 65% Enduro, 70% DH), or from bike geometry/rider position ( 1 - Chainstay/Wheelbase = % Front assuming weight centered over BB)</p>
+
+
+		<h4>"Progressivity"</h4>
+		<p>Progressivity is a common term that appears in "MTB media". I typically see it referenced as the percent change of the leverage ratio curve from top out to bottom out. This works as a great metric for the rising rate nature of a suspenion linkage if there is a roughly linear leverage ratio curve. With nonlinearities, 2 linkages with idential % progressivity can have different force/displacement curves with the same spring. </p>
+		<p>To calculate, find the leverage ratio at top out and bottom out. </p>
+		<p>Then compute % Progressivity = (Starting LR - Ending LR)/ Starting LR.</p>
+
+		<h3>Gas Force</h3>
+		<p>All traditional IFP or bladder style dampers use a gas charge to take up shaft volume. The gas acts as an air spring. This calculator assumes a typical size IFP chamber and shaft diameter if you don't input anything. It also assumes constant gas force over stroke, because modeling IFP volume is difficult without the CAD models of the shock or detailed measurements. As I rebuild shocks and mreasure them I'll add that data in. Please message me if you can measure your shock for me.</p>
+		<h4>Some Examples</h4>
+			<table border="2px">
+				<thead>
+					<th>Shock</th>
+					<th>Shaft Diameter</th>
+					<th>IFP Pressure</th>
+				</thead>
+				<tr>
+					<td>Fox DHX2 (2017-2020)</td>
+					<td>.354" (9mm)</td>
+					<td>150psi</td>
+				</tr>
+				<tr>
+					<td>Fox DHX2 (2021)</td>
+					<td>.375"</td>
+					<td>100psi</td>
+				</tr>
+				<tr>
+					<td>EXT Storia and Arma V3</td>
+					<td>.551" (14mm)</td>
+					<td>55psi</td>
+				</tr>
+				<tr>
+					<td>RS Super Deluxe Coil </td>
+					<td>.5"</td>
+					<td>250psi</td>
+				</tr>
+				<tr>
+					<td>DVO Jade</td>
+					<td>.551" (14mm)</td>
+					<td>180psi</td>
+				</tr>
+				<tr>
+					<td>Marz Bomber/Fox VAN</td>
+					<td>.5"</td>
+					<td>300psi</td>
+				</tr>
+				<tr>
+					<td>Cane Creek DB</td>
+					<td>.315" (8mm)</td>
+					<td>90psi</td>
+				</tr>
+				<tr>
+					<td>Ohlins TTX22</td>
+					<td>???</td>
+					<td>180psi</td>
+				</tr>
+			</table>
+
+		<h3>Preload and preload thread pitch</h3>
+
+		<h4>Preload</h4>
+		<p>Preload is better thought of as a "BB height adjuster" or "Ride height adjuster". Adding preload doesn't make the spring stiffer, or increase your bottom out force/energy significantly. Any preload is added to your shock's gas force to get the total force needed to start suspension movement (anything greater than zero is bad!). High preload == harshness!</p>
+
+		<h4>Thread Pitch</h4>
+		<p>How many threads per inch the preload adjuster is threaded with. Shocks made by US companies will probably have inch standard threads, measured in TPI (Threads per inch). You can measure this with a thread guage (included in many tap-and-die sets). Metric threads are standardized by the pitch (i.e. M20x1mm) where the 1mm is the pitch. To convert this number to TPI, use the formula: <br><br>TPI = 1/(25.4 * Metric Pitch (mm) )</p>
+		<table border="2px">
+				<thead>
+					<th>Shock</th>
+					<th>Thread Pitch</th>
+				</thead>
+				<tr>
+					<td>Fox</td>
+					<td>24 TPI</td>
+				</tr>
+			</table>
+
+
+	</main>
+	
+	</body>
+	<script type="text/javascript">
+
+		// submit button logic
+		document.getElementById('submit').addEventListener('click', process)
+		
+		function process () {			
+			// parse forum inputs
+			var rider_weight = +document.getElementById('rider_weight').value;
+			var bike_weight = +document.getElementById('bike_weight').value;
+
+			var magic_sprung_num = 0.66; // need to measure a few bikes for this... my V10 was 7.7lb unsprung rear 40.3 front w/ cushcore
+			// might be different for each style of bike. For Carbon DH bikes 0.6-0.7 seems to be roughly accurate
+			// I don't think it will change much because as frames get lighter/more XC, you use lighter wheels/tires
+
+			// alternatively let users input total bike weight AND rear unsprung as measured w/ a scale, default to magic ratio if no unsprung is input
+			var sprung_weight = rider_weight + magic_sprung_num*bike_weight; // estimation of total sprung mass
+
+			var stroke = +document.getElementById('stroke').value;
+			var travel = +document.getElementById('travel').value;
+			var spring = +document.getElementById('spring').value;
+			var preload = +document.getElementById('preload').value;
+			preload = preload*(1/24)
+
+			var shaft_diameter = +document.getElementById('shaft_diameter').value;
+			var gas_pressure = +document.getElementById('gas_pressure').value;
+
+			var rear_weight_percent = 1 - (+document.getElementById('chainstay').value/+document.getElementById('wheelbase').value);
+			// rear_weight_percent = rear_weight_percent/100;
+
+
+			var w_front = sprung_weight*(1-rear_weight_percent);
+			var w_rear = sprung_weight*(rear_weight_percent);
+
+			// linear leverage ratio math
+			var avgLR = travel/stroke;
+			var avgLRWR = spring/(Math.pow(avgLR,2));
+			var shockForce = w_rear*avgLR;
+			var preload_force = spring*preload;
+			var gasForce = (gas_pressure*3.14*Math.pow(shaft_diameter,2))/4
+			var spring_deflection_inches = ((shockForce-gasForce-preload_force)/spring); // deflection in inches F = kx
+			var spring_deflection = spring_deflection_inches * 25.4;
+			var avgLRsag = spring_deflection/stroke;
+			var avgLR_BO_Force = (gasForce + preload_force + spring*(stroke/25.4))/avgLR; // lbf
+			var avgLR_BO_Force_N = avgLR_BO_Force*4.44822162; // Newtons
+			var avgLRenergy = (0.5)*travel*(1/1000)*avgLR_BO_Force_N; //Nm or Joules
+			var avgLRnatfreq = (1/6.28)*Math.sqrt((avgLRWR*12*32.2)/w_rear)
+
+
+			// linear progression leverage ratio math
+			var progression = +document.getElementById('linear_progression').value;
+			progression = progression/100;
+			LR_start = (2*avgLR)/(2-progression);
+			LR_end = LR_start*(1-progression);
+			// output LR Curve (only doing this to lay groundwork for true nonlinear code)
+			var this_LR_curve = new Array(Math.round(travel))
+			for (var i=0; i <= Math.round(travel); i++) {
+				var subArr = new Array(2);
+				subArr[0] = i;
+				subArr[1] = -(((LR_start - LR_end)/travel) * i) + LR_start
+				this_LR_curve[i] = subArr;
+			}
+			var metric_stroke = LRCurveSag(this_LR_curve,w_rear,spring,preload_force,gasForce)
+			var linear_LR_method_sag = (metric_stroke/stroke)*100
+
+			console.log(this_LR_curve)
+
+
+
+			// output results
+			document.getElementById('rear_weight_percent').value = decimal_rounding(rear_weight_percent*100,1);
+			document.getElementById('avgLR').value = decimal_rounding(avgLR,2);
+			document.getElementById('avgLRWR').value = decimal_rounding(avgLRWR,2);
+			document.getElementById('avgLRsag').value = decimal_rounding(avgLRsag*100,2);
+			document.getElementById('avgLRnatfreq').value = decimal_rounding(avgLRnatfreq,2);
+			document.getElementById('gasForce').value = decimal_rounding(gasForce,2);
+			document.getElementById('linBottomOutForce').value = decimal_rounding((gasForce + preload_force + spring*(stroke/25.4))/avgLR,2);
+			document.getElementById('linBottomOutEnergy').value = decimal_rounding(avgLRenergy,2)
+
+			document.getElementById('linLRSag').value = decimal_rounding(linear_LR_method_sag,2);
+			document.getElementById('bottomOutForce').value = decimal_rounding((gasForce + preload_force + spring*(stroke/25.4))/this_LR_curve[this_LR_curve.length-1][1],2);
+
+
+			
+		}
+
+		function LRCurveSag (LRCurve,rear_weight,spring,preload_force,gas_force) {
+
+			// convert LR curve with frame travel to LR curve w/ shock travel... trapezoidal integral approximation
+			LRCurve[0][2] = 0; // set inital shock stroke to be zero for first travel segment... 0 travel = 0 stroke...
+			for (var i = 1; i < LRCurve.length; i++) {
+				// access this step's LR and travel
+				var step_arr = LRCurve[i];
+				var step_travel = step_arr[0];
+				var step_LR = step_arr[1];
+				// access previous step's LR and travel
+				var prev_step_arr = LRCurve[i-1];
+				var prev_step_travel = prev_step_arr[0];
+				var prev_step_LR = prev_step_arr[1];
+				// apply trapezoidal rule to approximate integral
+				var trapz = (step_travel - prev_step_travel) * (0.5) * (1/step_LR + 1/prev_step_LR); // shock stroke delta from previous travel to this travel step
+				LRCurve[i][2] = LRCurve[i-1][2] + (1/1000)* Math.round(trapz*1000); // add that shock stroke delta to previous cumulative stroke (round to avoid floating point stackup with 1/x stuff)
+			}
+
+			var LRsag = 0;
+			var LRstroke_inches = 0;
+			var LRstroke_metric = 0;
+			var difference = -rear_weight;
+			var error = 1;
+			while (error > .00001) {
+				LRstroke_inches = LRstroke_inches - (difference/spring);
+				LRstroke_metric = LRstroke_inches*25.4;
+				var spring_force = gas_force + preload_force + LRstroke_inches*spring;
+				// lookup table, lookup leverage ratio from current stroke ...
+				// TODO make this interpolate when nonlin curves are added
+				inital_diff = LRstroke_metric
+				for (i=0 ; i < LRCurve.length; i++) {
+					var diff = Math.abs(LRstroke_metric - LRCurve[i][2])
+					if (diff < inital_diff) {
+						LRlookup = LRCurve[i][1]
+					}
+				}
+				var wheel_force = spring_force/LRlookup;
+				difference = wheel_force - rear_weight;
+				error = difference*(-1);
+			}
+			return LRstroke_metric
+		}
+		function decimal_rounding (number,places) {
+			return Math.round(number*Math.pow(10,places))/(Math.pow(10,places))
+		}
+
+	</script>
+</html>

@@ -1,0 +1,19 @@
+body {
+	margin: 0;
+	font-family: 'Arial',sans-serif;
+	line-height: 1.7;
+	background-color: #CCCCFF
+}
+main {
+	max-width: 900px;
+	margin: 0 auto;
+	
+}
+h1	{
+	background-color: grey;
+	color: white;
+	padding: 10px;
+}
+table {
+	background-color: lightgrey;
+}
