@@ -1,6 +1,6 @@
 # MTB-Spring-Calc
 
-https://emphaticpuma.github.io/MTB-Spring-Calc/LRspring.html
+https://davidharuch.github.io/MTB-Spring-Calc/LRspring.html
 
 I was tired of hearing "what coil weight should I get", and existing spring calcs aren't too good. Manufacturer ones don't let you put in custom parts either :-(. So I made my own in javascript with a website gui.
 
