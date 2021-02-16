@@ -8,7 +8,7 @@ The more people that use it and give feedback to me the better it will get becau
 
 It is already much more advanced than most free calculators as for as I know
 
-Another good one is 
+Another good one is https://thesuspensionlab.nz/coil-spring-calculator-beta
 
 ## Novel Features
 
