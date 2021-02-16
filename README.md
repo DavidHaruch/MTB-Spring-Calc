@@ -8,6 +8,8 @@ The more people that use it and give feedback to me the better it will get becau
 
 It is already much more advanced than most free calculators as for as I know
 
+Another good one is 
+
 ## Novel Features
 
 * Bike sprung/unsprung mass estimation
@@ -17,6 +19,12 @@ It is already much more advanced than most free calculators as for as I know
 
 ## Planned features
 
+* metric & imperial unit input options
+* Nonlinear bottom out energy computation
+* Sprung/unsprung overrides
 * Nonlinear leverage ratio input
 * Graphical plotting of force/displacement, spring rate/displacement, etc...
 * Air shock comparission for reference from dyno/spring data
+
+* % Sag (and therefore spring) recommendations based on riding style, track speed/steepness, and desired suspension feel
+* Incorporate leverage ratio of the specific bike into the recommendations
